@@ -253,7 +253,7 @@
 <body>
 <div id="app"></div>
 
-<script src="firebase-config.js"></script>
+<script src="firebase-config.js?v=2"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
@@ -408,7 +408,7 @@
       '<div><h2 class="section-title">Almost there</h2>' +
       '<p class="lede">This page needs a Firebase project connected before anyone can join. Open <code>firebase-config.js</code> in this project, paste in your Firebase web app config, commit, and push — then reload this page.</p></div>' +
       (connectionError ? '<div class="card"><p class="footnote">Firebase reported: ' + escapeHtml(connectionError) + '</p></div>' : '') +
-      '<p class="footnote">See README.md in the repository for step-by-step setup instructions.</p>' +
+      '<p class="footnote">See README.md in the repository for step-by-step setup instructions. Already done this and still seeing this message? Do a hard refresh (Ctrl/Cmd+Shift+R) — your browser may be holding onto an old cached copy of <code>firebase-config.js</code>.</p>' +
       '</div>';
   }
 
