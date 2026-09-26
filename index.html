@@ -238,6 +238,38 @@
   .quad-hidden { background: var(--hidden); }
   .quad-unknown { background: var(--unknown); }
 
+  .insight-banner {
+    background: var(--surface-2);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .johari-square {
+    display: grid;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1;
+    gap: 4px;
+    margin: 0 auto;
+  }
+  .johari-square-sm { max-width: 140px; gap: 2px; }
+  .jsq-cell {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    color: #F7F4EE;
+    text-align: center;
+  }
+  .jsq-label { font-size: 14px; font-weight: 700; line-height: 1.25; padding: 6px; }
+
   .compare-row { display: flex; flex-direction: column; gap: 8px; }
   .compare-row-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
   .compare-cells { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 6px; }
@@ -332,6 +364,85 @@
     };
   }
 
+  // --- Johari visualization helpers ---
+
+  var QUAD_INFO = {
+    open: { label: "Open Area", cls: "quad-open", blurb: "Traits you and your colleagues both recognize — the foundation for trust and clear communication." },
+    blind: { label: "Blind Spot", cls: "quad-blind", blurb: "Traits colleagues see that haven't been named for yourself yet — worth asking about." },
+    hidden: { label: "Hidden Area", cls: "quad-hidden", blurb: "Traits known but not yet shared — sharing more can build deeper trust." },
+    unknown: { label: "Unknown Area", cls: "quad-unknown", blurb: "Traits nobody has surfaced yet — including strengths still waiting to be discovered." }
+  };
+
+  function pct(n) { return Math.round((n / 55) * 100); }
+
+  function johariSquareHtml(r, small) {
+    var colLeft = Math.max(r.open.length + r.hidden.length, 1);
+    var colRight = Math.max(r.blind.length + r.unpicked, 1);
+    var rowTop = Math.max(r.open.length + r.blind.length, 1);
+    var rowBottom = Math.max(r.hidden.length + r.unpicked, 1);
+    function cell(cls, label, count) {
+      var inner = small ? "" : ('<span class="jsq-label">' + label + '<br>' + count + '</span>');
+      return '<div class="jsq-cell ' + cls + '">' + inner + '</div>';
+    }
+    return '<div class="johari-square' + (small ? " johari-square-sm" : "") + '" style="grid-template-columns:' + colLeft + 'fr ' + colRight + 'fr; grid-template-rows:' + rowTop + 'fr ' + rowBottom + 'fr;">' +
+      cell("quad-open", "Open", r.open.length) +
+      cell("quad-blind", "Blind Spot", r.blind.length) +
+      cell("quad-hidden", "Hidden", r.hidden.length) +
+      cell("quad-unknown", "Unknown", r.unpicked) +
+      "</div>";
+  }
+
+  function insightText(r, name) {
+    if (!r.selfDone && r.ratersCount === 0) {
+      return name + " hasn't completed a self-assessment yet, and no colleagues have rated them yet.";
+    }
+    if (!r.selfDone) {
+      return name + " hasn't completed a self-assessment yet, but " + r.ratersCount + " colleague" + (r.ratersCount === 1 ? " has" : "s have") + " already shared words — that's " + r.blind.length + " in the Blind Spot so far.";
+    }
+    if (r.ratersCount === 0) {
+      return "No colleagues have rated " + name + " yet, so Open Area and Blind Spot can't be calculated until they do.";
+    }
+    var counts = [["Open Area", r.open.length], ["Blind Spot", r.blind.length], ["Hidden Area", r.hidden.length]];
+    counts.sort(function (a, b) { return b[1] - a[1]; });
+    if (counts[0][1] === 0) return "Self and peers haven't landed on any matching or differing words yet — try adding a few more.";
+    return "Right now " + name + "'s largest known area is " + counts[0][0] + " (" + counts[0][1] + " word" + (counts[0][1] === 1 ? "" : "s") + ").";
+  }
+
+  function renderJohariDetail(person, r, opts) {
+    opts = opts || {};
+    var name = person.name;
+
+    function block(key, getWords, useCounts) {
+      var info = QUAD_INFO[key];
+      var body, countText;
+      if (key === "unknown") {
+        countText = r.unpicked + " of 55 words (" + pct(r.unpicked) + "%) not yet surfaced";
+        body = '<p class="quad-empty">Nobody has named these yet — they may include strengths still waiting to be discovered.</p>';
+      } else {
+        var words = getWords(r);
+        countText = words.length + " of 55 words (" + pct(words.length) + "%)";
+        body = wordChips(words, useCounts ? r.peerCounts : null);
+      }
+      return '<div class="quad-card ' + info.cls + '"><h3>' + info.label + '</h3><p class="sub">' + info.blurb + '</p>' +
+        '<p class="sub" style="font-weight:700; opacity:1">' + countText + '</p>' + body + '</div>';
+    }
+
+    return '<div class="stack">' +
+      (opts.title === false ? "" : ('<div><h2 class="section-title">' + escapeHtml(name) + "'s Johari Window</h2>" +
+        '<p class="lede">Self-assessment: ' + (r.selfDone ? "done" : "pending") + " &middot; Feedback from " + r.ratersCount + " colleague" + (r.ratersCount === 1 ? "" : "s") + "</p></div>")) +
+      '<div class="insight-banner">' + escapeHtml(insightText(r, name)) + "</div>" +
+      johariSquareHtml(r, false) +
+      '<p class="footnote" style="text-align:center">Box size shows how many of the 55 words fall in each area — bigger means more words.</p>' +
+      '<div class="quad-grid">' +
+      block("open", function (rr) { return rr.open; }, false) +
+      block("blind", function (rr) { return rr.blind; }, true) +
+      block("hidden", function (rr) { return rr.hidden; }, false) +
+      block("unknown") +
+      "</div>" +
+      (opts.backAction ? ('<div class="confirm-row"><button type="button" class="btn btn-ghost" data-action="' + opts.backAction + '">&larr; Back</button></div>') : "") +
+      "</div>";
+  }
+
   // --- screen resolution ---
 
   function currentScreen() {
@@ -343,6 +454,7 @@
     if (ui.view === "rate-peer" && ui.ratingSubject && ui.ratingSubject !== me.id && findPerson(ui.ratingSubject)) return "rate-peer";
     if (ui.view === "self-edit") return "self";
     if (!me.selfWords) return "self";
+    if (ui.view === "my-results") return "my-results";
     return "peers";
   }
 
@@ -380,9 +492,13 @@
     var screen = currentScreen();
     var rightLink = "";
     if (configured) {
-      rightLink = screen === "results"
-        ? '<button type="button" class="link-btn" data-action="leave-results">&larr; Back to my workshop</button>'
-        : '<button type="button" class="link-btn" data-action="goto-results">Results (facilitator) &rarr;</button>';
+      if (screen === "results") {
+        rightLink = '<button type="button" class="link-btn" data-action="leave-results">&larr; Back to my workshop</button>';
+      } else if (screen === "my-results") {
+        rightLink = '<button type="button" class="link-btn" data-action="close-my-results">&larr; Back to colleagues</button>';
+      } else {
+        rightLink = '<button type="button" class="link-btn" data-action="goto-results">Results (facilitator) &rarr;</button>';
+      }
     }
     return '' +
       '<header class="top"><div class="top-row">' +
@@ -400,6 +516,7 @@
     var me = findPerson(myId);
     if (screen === "rate-peer") return renderRatePeer(me);
     if (screen === "self") return renderSelf(me);
+    if (screen === "my-results") return renderJohariDetail(me, computeResults(me.id), { backAction: "close-my-results" });
     return renderPeers(me);
   }
 
@@ -482,6 +599,7 @@
       '<h2 class="section-title">Rate your colleagues</h2>' +
       '<p class="lede">Pick anyone below and choose the words that describe them. You can rate as many colleagues as you like.</p>' +
       '</div>' +
+      '<div class="confirm-row"><button type="button" class="btn btn-ghost" data-action="see-my-results">See my Johari Window</button></div>' +
       banner +
       rows +
       '</div>';
@@ -542,6 +660,11 @@
         '<br>Self: ' + (r.selfDone ? "done" : "pending") + ' &middot; Feedback from ' + r.ratersCount + '</span></div>';
     }).join("");
 
+    var squares = people.map(function (p) {
+      return '<div class="compare-cell" style="text-align:center">' + johariSquareHtml(results[p.id], true) +
+        '<p class="footnote">' + escapeHtml(p.name) + "</p></div>";
+    }).join("");
+
     function row(label, cls, getWords, useCounts) {
       var cells = people.map(function (p) {
         var r = results[p.id];
@@ -557,6 +680,7 @@
 
     return '<div class="stack">' +
       '<div class="compare-row"><div class="compare-cells">' + meta + '</div></div>' +
+      '<div class="compare-row"><p class="compare-row-label">Shape at a glance</p><div class="compare-cells">' + squares + '</div></div>' +
       row("Open Area", "quad-open", function (r) { return r.open; }, false) +
       row("Blind Spot", "quad-blind", function (r) { return r.blind; }, true) +
       row("Hidden Area", "quad-hidden", function (r) { return r.hidden; }, false) +
@@ -587,9 +711,15 @@
     }).join("");
 
     var selectedIds = Object.keys(ui.compare).filter(function (id) { return ui.compare[id] && findPerson(id); });
-    var compareBlock = selectedIds.length
-      ? renderCompare(selectedIds)
-      : '<p class="empty-note">Tick one or more people above to see their Johari Window.</p>';
+    var compareBlock;
+    if (!selectedIds.length) {
+      compareBlock = '<p class="empty-note">Tick one or more people above to see their Johari Window.</p>';
+    } else if (selectedIds.length === 1) {
+      var onlyPerson = findPerson(selectedIds[0]);
+      compareBlock = renderJohariDetail(onlyPerson, computeResults(onlyPerson.id));
+    } else {
+      compareBlock = renderCompare(selectedIds);
+    }
 
     return '<div class="stack">' +
       '<div><h2 class="section-title">Results</h2>' +
@@ -713,6 +843,12 @@
       var me2 = findPerson(myId);
       ui.view = "self-edit";
       ui.draft = (me2 && me2.selfWords || []).slice();
+      render();
+    } else if (action === "see-my-results") {
+      ui.view = "my-results";
+      render();
+    } else if (action === "close-my-results") {
+      ui.view = null;
       render();
     } else if (action === "toggle-word") {
       var w = el.getAttribute("data-word");
