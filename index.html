@@ -581,7 +581,7 @@
     } else {
       rows = '<div class="list-group">' + others.map(function (p) {
         var words = state.ratings[rkey(me.id, p.id)];
-        var meta = [p.team, p.town].filter(Boolean).join(" &middot; ");
+        var meta = [p.team, p.town].filter(Boolean).join(" · ");
         var status = words
           ? '<span class="status done"><span class="dot-check"></span>' + words.length + " words</span>"
           : '<span class="status">Not rated yet</span>';
@@ -607,7 +607,7 @@
 
   function renderRatePeer(me) {
     var subject = findPerson(ui.ratingSubject);
-    var meta = [subject.team, subject.town].filter(Boolean).join(" &middot; ");
+    var meta = [subject.team, subject.town].filter(Boolean).join(" · ");
     var chips = WORDS.map(function (w) {
       var pressed = ui.draft.indexOf(w) !== -1;
       return '<button type="button" class="chip-word" aria-pressed="' + pressed + '" data-action="toggle-word" data-word="' + w + '">' + cap(w) + '</button>';
@@ -655,7 +655,7 @@
 
     var meta = people.map(function (p) {
       var r = results[p.id];
-      var loc = [p.team, p.town].filter(Boolean).join(" &middot; ");
+      var loc = [p.team, p.town].filter(Boolean).join(" · ");
       return '<div class="compare-cell meta-cell"><b>' + escapeHtml(p.name) + '</b><br><span class="footnote">' + (loc ? escapeHtml(loc) : "&nbsp;") +
         '<br>Self: ' + (r.selfDone ? "done" : "pending") + ' &middot; Feedback from ' + r.ratersCount + '</span></div>';
     }).join("");
