@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Johari Workshop</title>
+<meta name="description" content="Run the classic Johari Window adjective exercise live — everyone rates themselves and each other, then compares results.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Domine:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #F7F4EE;
+    --surface: #FFFEFB;
+    --surface-2: #EFEAE0;
+    --ink: #1C2B33;
+    --ink-soft: #4A5563;
+    --muted: #5A636B;
+    --line: #E1DCD0;
+    --navy: #1C3B4A;
+    --navy-ink: #F7F4EE;
+    --gold: #9C6B22;
+    --gold-strong: #7C5419;
+    --open: #2F6F71;
+    --open-fill: #2F6F71;
+    --blind: #8A5D26;
+    --hidden: #4A6B8C;
+    --unknown: #3A4750;
+    --danger: #9C3B2E;
+    --font-display: 'Domine', Georgia, serif;
+    --font-body: 'DM Sans', Arial, sans-serif;
+    --shadow: 0 1px 2px rgba(28,43,51,0.06), 0 8px 24px rgba(28,43,51,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101E25;
+      --surface: #17272F;
+      --surface-2: #1E313A;
+      --ink: #F2EFE7;
+      --ink-soft: #C6D2D3;
+      --muted: #93A3A6;
+      --line: #2A3E47;
+      --gold: #E3AE55;
+      --gold-strong: #E3AE55;
+      --open: #4E9698;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  body { padding-inline: 20px; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  button { font-family: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding-block: 28px 64px; }
+
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding-block: 16px;
+  }
+  .top-row {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand h1 { font-size: 24px; font-weight: 700; color: var(--ink); }
+  .brand .eyebrow { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-strong); font-weight: 600; }
+  .top-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sync-badge {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--open); flex: none; }
+  .sync-dot.bad { background: var(--danger); }
+  .link-btn { background: none; border: none; padding: 0; color: var(--gold-strong); font-weight: 600; font-size: 13px; white-space: nowrap; }
+  .link-btn:hover { text-decoration: underline; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .stack { display: flex; flex-direction: column; gap: 18px; }
+  .lede { font-size: 17px; color: var(--ink-soft); line-height: 1.55; max-width: 62ch; }
+
+  label.field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+  input[type="text"] {
+    font-size: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .btn-primary { background: var(--navy); color: var(--navy-ink); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .btn-text { background: none; border: none; color: var(--ink-soft); font-weight: 600; padding: 8px 4px; }
+
+  .empty-note { font-size: 15px; color: var(--muted); font-style: italic; }
+  .footnote { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .section-title { font-size: 24px; color: var(--ink); }
+  .whoami { font-size: 14px; color: var(--muted); }
+  .whoami b { color: var(--ink); }
+
+  .suggest-banner {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .suggest-banner.good { color: var(--gold-strong); font-weight: 600; }
+
+  .list-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; font-size: 15px; color: var(--ink);
+  }
+  .list-row:hover { border-color: var(--gold); }
+  .list-row .who-block { display: flex; flex-direction: column; gap: 2px; }
+  .list-row .name { font-weight: 700; }
+  .list-row .meta { font-size: 13px; color: var(--muted); }
+  .list-row .status { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 6px; flex: none; }
+  .list-row .status.done { color: var(--open); }
+  .dot-check { width: 8px; height: 8px; border-radius: 50%; background: var(--open); flex: none; }
+  .list-group { display: flex; flex-direction: column; gap: 10px; }
+
+  .picker-head { display: flex; flex-direction: column; gap: 6px; }
+  .picker-head .who { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-strong); font-weight: 700; }
+  .picker-head h2 { font-size: 30px; color: var(--ink); }
+  .word-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip-word {
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 15px;
+    text-transform: capitalize;
+    color: var(--ink);
+  }
+  .chip-word[aria-pressed="true"] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--navy-ink);
+  }
+  .picker-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .count-hint { font-size: 15px; font-weight: 600; color: var(--muted); }
+  .count-hint.good { color: var(--gold-strong); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table.roster { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.roster th, table.roster td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  table.roster thead th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; background: var(--surface-2); }
+  table.roster tbody tr:last-child td { border-bottom: none; }
+  table.roster tbody tr:hover { background: var(--surface-2); }
+
+  .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .quad-grid { grid-template-columns: 1fr; } }
+  .quad-card {
+    border-radius: 16px;
+    padding: 24px;
+    color: #F7F4EE;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 180px;
+  }
+  .quad-card h3 { font-size: 22px; color: #F7F4EE; }
+  .quad-card .sub { font-size: 14px; color: #F7F4EE; opacity: 0.85; }
+  .quad-card .words { display: flex; flex-wrap: wrap; gap: 8px; }
+  .quad-word {
+    background: rgba(247,244,238,0.16);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 14px;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .quad-word .n { font-size: 11px; font-weight: 700; opacity: 0.85; }
+  .quad-empty { font-size: 14px; opacity: 0.75; font-style: italic; }
+  .quad-open { background: var(--open-fill); }
+  .quad-blind { background: var(--blind); }
+  .quad-hidden { background: var(--hidden); }
+  .quad-unknown { background: var(--unknown); }
+
+  .compare-row { display: flex; flex-direction: column; gap: 8px; }
+  .compare-row-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .compare-cells { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 6px; }
+  .compare-cell { flex: 0 0 260px; min-height: auto; }
+  .meta-cell { background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 16px; padding: 20px; }
+  .meta-cell b { font-size: 16px; }
+
+  .confirm-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  code { background: var(--surface-2); padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  var WORDS = ["able","accepting","adaptable","bold","brave","calm","caring","cheerful","clever","complex","confident","dependable","dignified","energetic","extroverted","friendly","giving","happy","helpful","idealistic","independent","ingenious","intelligent","introverted","kind","knowledgeable","logical","loving","mature","modest","nervous","observant","organized","patient","powerful","proud","quiet","reflective","relaxed","religious","responsive","searching","self-assertive","self-conscious","sensible","sentimental","shy","silly","spontaneous","sympathetic","tense","trustworthy","warm","wise","witty"];
+  var MYID_KEY = "johariMyId";
+
+  var state = { participants: [], ratings: {} };
+  var ui = { view: null, ratingSubject: null, draft: [], filter: "", compare: {}, confirmReset: false };
+
+  var configured = false;
+  var connectionError = null;
+  var participantsCol = null;
+  var ratingsCol = null;
+
+  function rkey(rater, subject) { return rater + "::" + subject; }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+  function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+
+  function getMyId() { try { return localStorage.getItem(MYID_KEY); } catch (e) { return null; } }
+  function setMyId(id) { try { localStorage.setItem(MYID_KEY, id); } catch (e) {} }
+  function clearMyId() { try { localStorage.removeItem(MYID_KEY); } catch (e) {} }
+
+  function findPerson(id) {
+    for (var i = 0; i < state.participants.length; i++) {
+      if (state.participants[i].id === id) return state.participants[i];
+    }
+    return null;
+  }
+
+  function countRatingsBy(id) {
+    var c = 0;
+    Object.keys(state.ratings).forEach(function (k) { if (k.split("::")[0] === id) c++; });
+    return c;
+  }
+  function countRatingsFor(id) {
+    var c = 0;
+    Object.keys(state.ratings).forEach(function (k) { if (k.split("::")[1] === id) c++; });
+    return c;
+  }
+
+  function computeResults(subjectId) {
+    var person = findPerson(subjectId);
+    var selfWords = (person && person.selfWords) || null;
+    var peerCounts = {};
+    var ratersCount = 0;
+    Object.keys(state.ratings).forEach(function (k) {
+      var parts = k.split("::");
+      if (parts[1] === subjectId) {
+        ratersCount++;
+        (state.ratings[k] || []).forEach(function (w) { peerCounts[w] = (peerCounts[w] || 0) + 1; });
+      }
+    });
+    var selfSet = {};
+    (selfWords || []).forEach(function (w) { selfSet[w] = true; });
+    var peerWords = Object.keys(peerCounts);
+    var open = [], hidden = [], blind = [];
+    (selfWords || []).forEach(function (w) { if (peerCounts[w]) open.push(w); else hidden.push(w); });
+    peerWords.forEach(function (w) { if (!selfSet[w]) blind.push(w); });
+    open.sort(); hidden.sort();
+    blind.sort(function (a, b) { return (peerCounts[b] - peerCounts[a]) || a.localeCompare(b); });
+    var touched = {};
+    (selfWords || []).forEach(function (w) { touched[w] = true; });
+    peerWords.forEach(function (w) { touched[w] = true; });
+    return {
+      selfDone: !!selfWords,
+      ratersCount: ratersCount,
+      open: open, hidden: hidden, blind: blind,
+      peerCounts: peerCounts,
+      unpicked: 55 - Object.keys(touched).length
+    };
+  }
+
+  // --- screen resolution ---
+
+  function currentScreen() {
+    if (!configured) return "setup-needed";
+    if (ui.view === "results") return "results";
+    var myId = getMyId();
+    var me = myId ? findPerson(myId) : null;
+    if (!me) return "join";
+    if (ui.view === "rate-peer" && ui.ratingSubject && ui.ratingSubject !== me.id && findPerson(ui.ratingSubject)) return "rate-peer";
+    if (ui.view === "self-edit") return "self";
+    if (!me.selfWords) return "self";
+    return "peers";
+  }
+
+  // --- render ---
+
+  function render() {
+    var active = document.activeElement;
+    var focusId = active && active.id;
+    var selStart = focusId && typeof active.selectionStart === "number" ? active.selectionStart : null;
+    var selEnd = focusId && typeof active.selectionEnd === "number" ? active.selectionEnd : null;
+
+    var app = document.getElementById("app");
+    app.innerHTML = renderHeader() + '<div class="wrap">' + renderScreen() + "</div>";
+
+    if (focusId) {
+      var el = document.getElementById(focusId);
+      if (el && typeof el.focus === "function") {
+        el.focus();
+        if (selStart !== null && el.setSelectionRange) {
+          try { el.setSelectionRange(selStart, selEnd); } catch (e) {}
+        }
+      }
+    }
+  }
+
+  function renderHeader() {
+    var badge;
+    if (!configured) {
+      badge = '<span class="sync-badge"><span class="sync-dot bad"></span>Setup needed</span>';
+    } else if (connectionError) {
+      badge = '<span class="sync-badge"><span class="sync-dot bad"></span>Connection trouble</span>';
+    } else {
+      badge = '<span class="sync-badge"><span class="sync-dot"></span>Synced live across devices</span>';
+    }
+    var screen = currentScreen();
+    var rightLink = "";
+    if (configured) {
+      rightLink = screen === "results"
+        ? '<button type="button" class="link-btn" data-action="leave-results">&larr; Back to my workshop</button>'
+        : '<button type="button" class="link-btn" data-action="goto-results">Results (facilitator) &rarr;</button>';
+    }
+    return '' +
+      '<header class="top"><div class="top-row">' +
+      '<div class="brand"><p class="eyebrow">Self &amp; peer feedback</p><h1>Johari Workshop</h1></div>' +
+      '<div class="top-actions">' + badge + rightLink + '</div>' +
+      '</div></header>';
+  }
+
+  function renderScreen() {
+    var screen = currentScreen();
+    if (screen === "setup-needed") return renderSetupNeeded();
+    if (screen === "results") return renderResults();
+    if (screen === "join") return renderJoin();
+    var myId = getMyId();
+    var me = findPerson(myId);
+    if (screen === "rate-peer") return renderRatePeer(me);
+    if (screen === "self") return renderSelf(me);
+    return renderPeers(me);
+  }
+
+  function renderSetupNeeded() {
+    return '<div class="stack">' +
+      '<div><h2 class="section-title">Almost there</h2>' +
+      '<p class="lede">This page needs a Firebase project connected before anyone can join. Open <code>firebase-config.js</code> in this project, paste in your Firebase web app config, commit, and push — then reload this page.</p></div>' +
+      (connectionError ? '<div class="card"><p class="footnote">Firebase reported: ' + escapeHtml(connectionError) + '</p></div>' : '') +
+      '<p class="footnote">See README.md in the repository for step-by-step setup instructions.</p>' +
+      '</div>';
+  }
+
+  function renderJoin() {
+    var n = state.participants.length;
+    return '<div class="stack">' +
+      '<div><h2 class="section-title">Join the workshop</h2>' +
+      '<p class="lede">Enter your details, then pick the words that describe you. Once you\'re done, you\'ll be able to do the same for your colleagues.</p></div>' +
+      '<form class="card stack" data-action="join-submit">' +
+      '<label class="field">Name<input type="text" id="joinName" name="name" placeholder="Your full name" maxlength="60" autocomplete="off" required></label>' +
+      '<label class="field">Team<input type="text" id="joinTeam" name="team" placeholder="e.g. Product, Sales, Engineering" maxlength="60" autocomplete="off"></label>' +
+      '<label class="field">Base Town<input type="text" id="joinTown" name="town" placeholder="e.g. Lahore" maxlength="60" autocomplete="off"></label>' +
+      '<button type="submit" class="btn btn-primary">Continue</button>' +
+      '</form>' +
+      (n ? '<p class="footnote">' + n + ' ' + (n === 1 ? "person has" : "people have") + ' already joined.</p>' : '') +
+      '</div>';
+  }
+
+  function renderSelf(me) {
+    var chips = WORDS.map(function (w) {
+      var pressed = ui.draft.indexOf(w) !== -1;
+      return '<button type="button" class="chip-word" aria-pressed="' + pressed + '" data-action="toggle-word" data-word="' + w + '">' + cap(w) + '</button>';
+    }).join("");
+    var n = ui.draft.length;
+    var hintClass = (n >= 4 && n <= 7) ? "count-hint good" : "count-hint";
+    return '<div class="stack">' +
+      '<div class="picker-head">' +
+      '<p class="who">' + escapeHtml(me.name) + '</p>' +
+      '<h2>Which of these describe you?</h2>' +
+      '<p class="lede">Pick about 5–6 words from the list below — whatever feels most true right now.</p>' +
+      '</div>' +
+      '<div class="card"><div class="word-grid">' + chips + '</div></div>' +
+      '<div class="picker-footer">' +
+      '<span class="' + hintClass + '">' + n + ' selected</span>' +
+      '<button class="btn btn-primary" data-action="save-self">Save &amp; continue</button>' +
+      '</div>' +
+      '</div>';
+  }
+
+  function renderPeers(me) {
+    var others = state.participants.filter(function (p) { return p.id !== me.id; });
+    var ratedCount = countRatingsBy(me.id);
+    var suggestGood = ratedCount >= 3;
+    var banner = '<div class="suggest-banner' + (suggestGood ? " good" : "") + '">' +
+      (suggestGood
+        ? ("Nice — you've rated " + ratedCount + " colleague" + (ratedCount === 1 ? "" : "s") + ". Feel free to add more, or you're done for now.")
+        : ("You've rated " + ratedCount + " colleague" + (ratedCount === 1 ? "" : "s") + ". We suggest rating at least 3–5.")) +
+      '</div>';
+
+    var rows;
+    if (!others.length) {
+      rows = '<p class="empty-note">No other colleagues have joined yet. Share the link and check back soon.</p>';
+    } else {
+      rows = '<div class="list-group">' + others.map(function (p) {
+        var words = state.ratings[rkey(me.id, p.id)];
+        var meta = [p.team, p.town].filter(Boolean).join(" &middot; ");
+        var status = words
+          ? '<span class="status done"><span class="dot-check"></span>' + words.length + " words</span>"
+          : '<span class="status">Not rated yet</span>';
+        return '<button type="button" class="list-row" data-action="open-rate-peer" data-id="' + p.id + '">' +
+          '<span class="who-block"><span class="name">' + escapeHtml(p.name) + '</span>' + (meta ? ('<span class="meta">' + escapeHtml(meta) + '</span>') : '') + '</span>' +
+          status + '</button>';
+      }).join("") + '</div>';
+    }
+
+    return '<div class="stack">' +
+      '<div>' +
+      '<p class="whoami">Signed in as <b>' + escapeHtml(me.name) + '</b>' + ([me.team, me.town].filter(Boolean).length ? (" &middot; " + escapeHtml([me.team, me.town].filter(Boolean).join(" · "))) : "") +
+      ' &middot; <button type="button" class="link-btn" data-action="edit-self">edit my words</button>' +
+      ' &middot; <button type="button" class="link-btn" data-action="switch-person">not you?</button></p>' +
+      '<h2 class="section-title">Rate your colleagues</h2>' +
+      '<p class="lede">Pick anyone below and choose the words that describe them. You can rate as many colleagues as you like.</p>' +
+      '</div>' +
+      banner +
+      rows +
+      '</div>';
+  }
+
+  function renderRatePeer(me) {
+    var subject = findPerson(ui.ratingSubject);
+    var meta = [subject.team, subject.town].filter(Boolean).join(" &middot; ");
+    var chips = WORDS.map(function (w) {
+      var pressed = ui.draft.indexOf(w) !== -1;
+      return '<button type="button" class="chip-word" aria-pressed="' + pressed + '" data-action="toggle-word" data-word="' + w + '">' + cap(w) + '</button>';
+    }).join("");
+    var n = ui.draft.length;
+    var hintClass = (n >= 4 && n <= 7) ? "count-hint good" : "count-hint";
+    return '<div class="stack">' +
+      '<div class="picker-head">' +
+      '<p class="who">' + escapeHtml(me.name) + ' &rarr; ' + escapeHtml(subject.name) + (meta ? (' &middot; ' + escapeHtml(meta)) : '') + '</p>' +
+      '<h2>Words that describe ' + escapeHtml(subject.name) + '</h2>' +
+      '<p class="lede">Pick about 5–6 words from the list below.</p>' +
+      '</div>' +
+      '<div class="card"><div class="word-grid">' + chips + '</div></div>' +
+      '<div class="picker-footer">' +
+      '<span class="' + hintClass + '">' + n + ' selected</span>' +
+      '<div class="confirm-row">' +
+      '<button class="btn btn-ghost" data-action="cancel-rate-peer">Cancel</button>' +
+      '<button class="btn btn-primary" data-action="save-peer-rating">Save &amp; back to colleagues</button>' +
+      '</div></div>' +
+      '</div>';
+  }
+
+  function renderResetControl() {
+    if (ui.confirmReset) {
+      return '<span class="footnote">Erase everyone and every rating? </span>' +
+        '<button class="btn btn-danger" data-action="reset-confirm">Yes, reset</button>' +
+        '<button class="btn btn-text" data-action="reset-cancel">Cancel</button>';
+    }
+    return '<button class="btn btn-text" data-action="reset-ask">Reset workshop</button>';
+  }
+
+  function wordChips(arr, counts) {
+    if (!arr.length) return '<p class="quad-empty">Nothing here yet</p>';
+    return '<div class="words">' + arr.map(function (w) {
+      var n = counts ? (counts[w] || 0) : 0;
+      return '<span class="quad-word">' + cap(w) + (n > 1 ? '<span class="n">&times;' + n + '</span>' : "") + '</span>';
+    }).join("") + '</div>';
+  }
+
+  function renderCompare(ids) {
+    var people = ids.map(findPerson).filter(Boolean);
+    if (!people.length) return "";
+    var results = {};
+    people.forEach(function (p) { results[p.id] = computeResults(p.id); });
+
+    var meta = people.map(function (p) {
+      var r = results[p.id];
+      var loc = [p.team, p.town].filter(Boolean).join(" &middot; ");
+      return '<div class="compare-cell meta-cell"><b>' + escapeHtml(p.name) + '</b><br><span class="footnote">' + (loc ? escapeHtml(loc) : "&nbsp;") +
+        '<br>Self: ' + (r.selfDone ? "done" : "pending") + ' &middot; Feedback from ' + r.ratersCount + '</span></div>';
+    }).join("");
+
+    function row(label, cls, getWords, useCounts) {
+      var cells = people.map(function (p) {
+        var r = results[p.id];
+        return '<div class="quad-card ' + cls + ' compare-cell"><h3>' + escapeHtml(p.name) + '</h3>' + wordChips(getWords(r), useCounts ? r.peerCounts : null) + '</div>';
+      }).join("");
+      return '<div class="compare-row"><p class="compare-row-label">' + label + '</p><div class="compare-cells">' + cells + '</div></div>';
+    }
+
+    var unknownCells = people.map(function (p) {
+      var r = results[p.id];
+      return '<div class="quad-card quad-unknown compare-cell"><h3>' + escapeHtml(p.name) + '</h3><p class="quad-empty">' + r.unpicked + ' of 55 unpicked</p></div>';
+    }).join("");
+
+    return '<div class="stack">' +
+      '<div class="compare-row"><div class="compare-cells">' + meta + '</div></div>' +
+      row("Open Area", "quad-open", function (r) { return r.open; }, false) +
+      row("Blind Spot", "quad-blind", function (r) { return r.blind; }, true) +
+      row("Hidden Area", "quad-hidden", function (r) { return r.hidden; }, false) +
+      '<div class="compare-row"><p class="compare-row-label">Unknown Area</p><div class="compare-cells">' + unknownCells + '</div></div>' +
+      '</div>';
+  }
+
+  function renderResults() {
+    var q = (ui.filter || "").toLowerCase();
+    var rows = state.participants.filter(function (p) {
+      if (!q) return true;
+      return (p.name || "").toLowerCase().indexOf(q) !== -1 ||
+        (p.team || "").toLowerCase().indexOf(q) !== -1 ||
+        (p.town || "").toLowerCase().indexOf(q) !== -1;
+    });
+
+    var tableRows = rows.map(function (p) {
+      var checked = !!ui.compare[p.id];
+      return '<tr>' +
+        '<td><input type="checkbox" data-action="toggle-compare" data-id="' + p.id + '" ' + (checked ? "checked" : "") + '></td>' +
+        '<td>' + escapeHtml(p.name) + '</td>' +
+        '<td>' + escapeHtml(p.team || "—") + '</td>' +
+        '<td>' + escapeHtml(p.town || "—") + '</td>' +
+        '<td>' + (p.selfWords ? ("Done (" + p.selfWords.length + ")") : "Pending") + '</td>' +
+        '<td>' + countRatingsFor(p.id) + '</td>' +
+        '<td>' + countRatingsBy(p.id) + '</td>' +
+        '</tr>';
+    }).join("");
+
+    var selectedIds = Object.keys(ui.compare).filter(function (id) { return ui.compare[id] && findPerson(id); });
+    var compareBlock = selectedIds.length
+      ? renderCompare(selectedIds)
+      : '<p class="empty-note">Tick one or more people above to see their Johari Window.</p>';
+
+    return '<div class="stack">' +
+      '<div><h2 class="section-title">Results</h2>' +
+      '<p class="lede">' + state.participants.length + ' ' + (state.participants.length === 1 ? "person has" : "people have") + ' joined. Tick anyone below to see their Johari Window, or tick several to compare.</p></div>' +
+      '<input type="text" id="resultsFilterInput" data-role="filter" placeholder="Filter by name, team or town" value="' + escapeHtml(ui.filter || "") + '">' +
+      '<div class="table-wrap"><table class="roster"><thead><tr><th></th><th>Name</th><th>Team</th><th>Town</th><th>Self</th><th>Feedback received</th><th>Feedback given</th></tr></thead><tbody>' +
+      (tableRows || '<tr><td colspan="7" class="empty-note">No matches</td></tr>') +
+      '</tbody></table></div>' +
+      compareBlock +
+      '<div class="confirm-row">' + renderResetControl() + '</div>' +
+      '</div>';
+  }
+
+  // --- persistence (Firebase Firestore) ---
+
+  function upsertParticipant(id, patch) {
+    var idx = -1;
+    for (var i = 0; i < state.participants.length; i++) { if (state.participants[i].id === id) { idx = i; break; } }
+    var full;
+    if (idx === -1) {
+      full = { id: id, name: "", team: "", town: "", selfWords: null, joinedAt: Date.now() };
+      full = Object.assign(full, patch);
+      state.participants.push(full);
+    } else {
+      full = Object.assign({}, state.participants[idx], patch);
+      state.participants[idx] = full;
+    }
+    render();
+    var body = { name: full.name, team: full.team, town: full.town, selfWords: full.selfWords, joinedAt: full.joinedAt };
+    participantsCol.doc(id).set(body).catch(function (e) { console.warn("save participant failed", e); });
+  }
+
+  function saveRating(rater, subject, words) {
+    state.ratings[rkey(rater, subject)] = words;
+    render();
+    ratingsCol.doc(rater + "__" + subject).set({ raterId: rater, subjectId: subject, words: words, updatedAt: Date.now() })
+      .catch(function (e) { console.warn("save rating failed", e); });
+  }
+
+  function resetWorkshop() {
+    clearMyId();
+    participantsCol.get().then(function (qs) {
+      qs.forEach(function (d) { participantsCol.doc(d.id).delete().catch(function () {}); });
+    }).catch(function () {});
+    ratingsCol.get().then(function (qs) {
+      qs.forEach(function (d) { ratingsCol.doc(d.id).delete().catch(function () {}); });
+    }).catch(function () {});
+    state = { participants: [], ratings: {} };
+    ui = { view: null, ratingSubject: null, draft: [], filter: "", compare: {}, confirmReset: false };
+    try { location.hash = ""; } catch (e) {}
+    render();
+  }
+
+  function initFirebase() {
+    var cfg = window.FIREBASE_CONFIG || {};
+    if (!cfg.apiKey || String(cfg.apiKey).indexOf("YOUR_") === 0) {
+      configured = false;
+      render();
+      return;
+    }
+    try {
+      firebase.initializeApp(cfg);
+      var db = firebase.firestore();
+      participantsCol = db.collection("participants");
+      ratingsCol = db.collection("ratings");
+      configured = true;
+
+      participantsCol.onSnapshot(function (snap) {
+        connectionError = null;
+        state.participants = snap.docs.map(function (d) {
+          var b = d.data() || {};
+          return { id: d.id, name: b.name || "", team: b.team || "", town: b.town || "", selfWords: b.selfWords || null, joinedAt: b.joinedAt || 0 };
+        });
+        state.participants.sort(function (a, b) { return a.joinedAt - b.joinedAt; });
+        render();
+      }, function (err) {
+        connectionError = err && err.message ? err.message : String(err);
+        render();
+      });
+
+      ratingsCol.onSnapshot(function (snap) {
+        var r = {};
+        snap.docs.forEach(function (d) {
+          var b = d.data() || {};
+          if (b.raterId && b.subjectId) r[b.raterId + "::" + b.subjectId] = b.words || [];
+        });
+        state.ratings = r;
+        render();
+      }, function (err) {
+        connectionError = err && err.message ? err.message : String(err);
+        render();
+      });
+    } catch (e) {
+      configured = false;
+      connectionError = e && e.message ? e.message : String(e);
+    }
+    render();
+  }
+
+  // --- actions ---
+
+  function onClick(e) {
+    var el = e.target.closest("[data-action]");
+    if (!el) return;
+    var action = el.getAttribute("data-action");
+
+    if (action === "goto-results") {
+      ui.view = "results";
+      try { location.hash = "results"; } catch (e2) {}
+      render();
+    } else if (action === "leave-results") {
+      ui.view = null;
+      try { location.hash = ""; } catch (e2) {}
+      render();
+    } else if (action === "switch-person") {
+      clearMyId();
+      ui.view = null; ui.draft = [];
+      render();
+    } else if (action === "edit-self") {
+      var myId = getMyId();
+      var me2 = findPerson(myId);
+      ui.view = "self-edit";
+      ui.draft = (me2 && me2.selfWords || []).slice();
+      render();
+    } else if (action === "toggle-word") {
+      var w = el.getAttribute("data-word");
+      var idx = ui.draft.indexOf(w);
+      if (idx === -1) ui.draft.push(w); else ui.draft.splice(idx, 1);
+      render();
+    } else if (action === "save-self") {
+      var myId2 = getMyId();
+      var words = ui.draft.slice();
+      ui.view = null; ui.draft = [];
+      upsertParticipant(myId2, { selfWords: words });
+    } else if (action === "open-rate-peer") {
+      var id = el.getAttribute("data-id");
+      var myId3 = getMyId();
+      ui.ratingSubject = id;
+      ui.draft = (state.ratings[rkey(myId3, id)] || []).slice();
+      ui.view = "rate-peer";
+      render();
+    } else if (action === "cancel-rate-peer") {
+      ui.ratingSubject = null; ui.draft = []; ui.view = null;
+      render();
+    } else if (action === "save-peer-rating") {
+      var myId4 = getMyId();
+      var subjectId = ui.ratingSubject;
+      var peerWords = ui.draft.slice();
+      ui.ratingSubject = null; ui.draft = []; ui.view = null;
+      saveRating(myId4, subjectId, peerWords);
+    } else if (action === "toggle-compare") {
+      var cid = el.getAttribute("data-id");
+      if (ui.compare[cid]) delete ui.compare[cid]; else ui.compare[cid] = true;
+      render();
+    } else if (action === "reset-ask") {
+      ui.confirmReset = true; render();
+    } else if (action === "reset-cancel") {
+      ui.confirmReset = false; render();
+    } else if (action === "reset-confirm") {
+      resetWorkshop();
+    }
+  }
+
+  function onInput(e) {
+    if (e.target && e.target.getAttribute && e.target.getAttribute("data-role") === "filter") {
+      ui.filter = e.target.value;
+      render();
+    }
+  }
+
+  function onSubmit(e) {
+    var form = e.target.closest('[data-action="join-submit"]');
+    if (!form) return;
+    e.preventDefault();
+    var name = (form.querySelector("#joinName").value || "").trim();
+    var team = (form.querySelector("#joinTeam").value || "").trim();
+    var town = (form.querySelector("#joinTown").value || "").trim();
+    if (!name) return;
+    var id = "p_" + Math.random().toString(36).slice(2, 9);
+    setMyId(id);
+    ui.draft = [];
+    upsertParticipant(id, { name: name.slice(0, 60), team: team.slice(0, 60), town: town.slice(0, 60), selfWords: null, joinedAt: Date.now() });
+  }
+
+  document.getElementById("app").addEventListener("click", onClick);
+  document.getElementById("app").addEventListener("submit", onSubmit);
+  document.getElementById("app").addEventListener("input", onInput);
+
+  try { if (location.hash.replace("#", "") === "results") ui.view = "results"; } catch (e) {}
+  render();
+  initFirebase();
+})();
+</script>
+</body>
+</html>
