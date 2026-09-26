@@ -30,10 +30,13 @@ free "Spark" plan, no credit card required for this scale of use).
      appId: "..."
    };
    ```
-4. Open [`firebase-config.js`](firebase-config.js) in this repository and replace the
-   placeholder values with your own from step 3. Commit and push the change (or edit the
-   file directly on GitHub and commit there) — GitHub Pages will pick it up automatically
-   within a minute or two.
+4. Open [`firebase-config.js`](firebase-config.js) in this repository and copy just the
+   *values* from step 3's snippet into the matching fields already in that file. **Don't
+   paste Firebase's snippet in wholesale** — it declares `const firebaseConfig = {...}`,
+   but this app specifically reads `window.FIREBASE_CONFIG = {...}`, so keep that line as
+   it is in the file and only replace the values inside it. Commit and push the change (or
+   edit the file directly on GitHub and commit there) — GitHub Pages will pick it up
+   automatically within a minute or two.
 5. Back in the Firebase console, go to **Firestore Database → Rules** and replace the
    default rules with:
    ```
