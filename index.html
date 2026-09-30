@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Johari Workshop by Shaigan Training & SFE</title>
-<meta name="description" content="Run the classic Johari Window adjective exercise live — everyone rates themselves and each other, then compares results.">
+<meta name="description" content="Run a live Johari Window self &amp; peer feedback exercise — everyone rates themselves and each other, then compares results.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Domine:wght@400;700&display=swap" rel="stylesheet">
@@ -290,7 +290,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
 (function () {
-  var WORDS = ["able","accepting","adaptable","bold","brave","calm","caring","cheerful","clever","complex","confident","dependable","dignified","energetic","extroverted","friendly","giving","happy","helpful","idealistic","independent","ingenious","intelligent","introverted","kind","knowledgeable","logical","loving","mature","modest","nervous","observant","organized","patient","powerful","proud","quiet","reflective","relaxed","religious","responsive","searching","self-assertive","self-conscious","sensible","sentimental","shy","silly","spontaneous","sympathetic","tense","trustworthy","warm","wise","witty"];
+  var WORDS = ["territory planning","call average","coverage discipline","doctor engagement","prescription generation","key account management","retailer relations","distributor management","detailing skills","product knowledge","team building","field coaching","delegation","performance management","motivator","mentor","recruitment","induction training","conflict resolution","joint working","excel proficient","powerpoint skills","data analysis","mis reporting","sales forecasting","budget planning","market analysis","kpi tracking","crm/fpms savvy","trend spotting","presentation skills","negotiation","public speaking","persuasive","active listener","report writing","cross-functional collaboration","stakeholder management","feedback-giver","email etiquette","strategic planning","decision making","business acumen","competitor analysis","time management","result-oriented","resilient under pressure","proactive","accountable","adaptable"];
   var MYID_KEY = "johariMyId";
 
   var state = { participants: [], ratings: {} };
@@ -360,7 +360,7 @@
       ratersCount: ratersCount,
       open: open, hidden: hidden, blind: blind,
       peerCounts: peerCounts,
-      unpicked: 55 - Object.keys(touched).length
+      unpicked: WORDS.length - Object.keys(touched).length
     };
   }
 
@@ -373,7 +373,7 @@
     unknown: { label: "Unknown Area", cls: "quad-unknown", blurb: "Traits nobody has surfaced yet — including strengths still waiting to be discovered." }
   };
 
-  function pct(n) { return Math.round((n / 55) * 100); }
+  function pct(n) { return Math.round((n / WORDS.length) * 100); }
 
   function johariSquareHtml(r, small) {
     var colLeft = Math.max(r.open.length + r.hidden.length, 1);
@@ -416,11 +416,11 @@
       var info = QUAD_INFO[key];
       var body, countText;
       if (key === "unknown") {
-        countText = r.unpicked + " of 55 words (" + pct(r.unpicked) + "%) not yet surfaced";
+        countText = r.unpicked + " of " + WORDS.length + " words (" + pct(r.unpicked) + "%) not yet surfaced";
         body = '<p class="quad-empty">Nobody has named these yet — they may include strengths still waiting to be discovered.</p>';
       } else {
         var words = getWords(r);
-        countText = words.length + " of 55 words (" + pct(words.length) + "%)";
+        countText = words.length + " of " + WORDS.length + " words (" + pct(words.length) + "%)";
         body = wordChips(words, useCounts ? r.peerCounts : null);
       }
       return '<div class="quad-card ' + info.cls + '"><h3>' + info.label + '</h3><p class="sub">' + info.blurb + '</p>' +
@@ -432,7 +432,7 @@
         '<p class="lede">Self-assessment: ' + (r.selfDone ? "done" : "pending") + " &middot; Feedback from " + r.ratersCount + " colleague" + (r.ratersCount === 1 ? "" : "s") + "</p></div>")) +
       '<div class="insight-banner">' + escapeHtml(insightText(r, name)) + "</div>" +
       johariSquareHtml(r, false) +
-      '<p class="footnote" style="text-align:center">Box size shows how many of the 55 words fall in each area — bigger means more words.</p>' +
+      '<p class="footnote" style="text-align:center">Box size shows how many of the ' + WORDS.length + ' words fall in each area — bigger means more words.</p>' +
       '<div class="quad-grid">' +
       block("open", function (rr) { return rr.open; }, false) +
       block("blind", function (rr) { return rr.blind; }, true) +
@@ -675,7 +675,7 @@
 
     var unknownCells = people.map(function (p) {
       var r = results[p.id];
-      return '<div class="quad-card quad-unknown compare-cell"><h3>' + escapeHtml(p.name) + '</h3><p class="quad-empty">' + r.unpicked + ' of 55 unpicked</p></div>';
+      return '<div class="quad-card quad-unknown compare-cell"><h3>' + escapeHtml(p.name) + '</h3><p class="quad-empty">' + r.unpicked + ' of ' + WORDS.length + ' unpicked</p></div>';
     }).join("");
 
     return '<div class="stack">' +

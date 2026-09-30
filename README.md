@@ -1,9 +1,16 @@
 # Johari Workshop
 
 A live Johari Window exercise: everyone opens the same link, enters their name/team/town,
-selects the classic 55 adjectives that describe themselves, then rates as many colleagues
-as they like. A facilitator view lets you browse everyone who's joined and compare any
-selection of people's Johari Windows side by side.
+selects the words from the shared list that describe themselves, then rates as many
+colleagues as they like. A facilitator view lets you browse everyone who's joined and
+compare any selection of people's Johari Windows side by side.
+
+The word list lives in [`index.html`](index.html) as the `WORDS` array — swap it for any
+set of traits or skills relevant to your group (the current list is tailored to
+pharmaceutical field sales managers: ASM/ZSM-level skills like territory planning,
+Excel, presentation skills, and negotiation, rather than the original general-personality
+Johari adjectives). Every count and percentage in the app is computed from `WORDS.length`,
+so changing the list works with any number of words.
 
 This is a static site (plain HTML/CSS/JS) that syncs data between everyone's devices
 using [Firebase Firestore](https://firebase.google.com/docs/firestore) (it's on Firebase's
