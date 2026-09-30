@@ -88,8 +88,9 @@
     flex-wrap: wrap;
   }
   .brand { display: flex; flex-direction: column; gap: 2px; }
-  .brand h1 { font-size: 24px; font-weight: 700; color: var(--ink); }
+  .brand h1 { font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1.3; }
   .brand .eyebrow { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-strong); font-weight: 600; }
+  .brand .byline { font-size: 13px; font-weight: 500; color: var(--muted); }
   .top-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .sync-badge {
     font-size: 12px;
@@ -290,7 +291,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
 (function () {
-  var WORDS = ["territory planning","call average","coverage discipline","doctor engagement","prescription generation","key account management","retailer relations","distributor management","detailing skills","product knowledge","team building","field coaching","delegation","performance management","motivator","mentor","recruitment","induction training","conflict resolution","joint working","excel proficient","powerpoint skills","data analysis","mis reporting","sales forecasting","budget planning","market analysis","kpi tracking","crm/fpms savvy","trend spotting","presentation skills","negotiation","public speaking","persuasive","active listener","report writing","cross-functional collaboration","stakeholder management","feedback-giver","email etiquette","strategic planning","decision making","business acumen","competitor analysis","time management","result-oriented","resilient under pressure","proactive","accountable","adaptable"];
+  var WORDS = ["Planning","Dr. Call Quality","coverage discipline","doctor engagement","prescription generation","key account management","chemist relations","distributor management","detailing skills","product knowledge","team building","field coaching","delegation","performance management","motivator","mentor","recruitment skill","on job coaching","conflict resolution","joint working support","excel proficient","powerpoint skills","data analysis","FPMS reports discussion","sales forecasting","budget planning","market analysis","KPI tracking","CRM/FPMS knowledge","New trend spotting","presentation skills","negotiation","public speaking","persuasive","active listener","proper report writing","interpersonal skills","stakeholder management","feedback-giver","email etiquette","strategic planning","decision making","business acumen","competitor analysis","time management","result-oriented","resilient under pressure","proactive","accountable","adaptable"];
   var MYID_KEY = "johariMyId";
 
   var state = { participants: [], ratings: {} };
@@ -514,7 +515,7 @@
     }
     return '' +
       '<header class="top"><div class="top-row">' +
-      '<div class="brand"><p class="eyebrow">Self &amp; peer feedback</p><h1>Johari-Window Workshop Developed: by Shaigan Training &amp; SFE Department</h1></div>' +
+      '<div class="brand"><p class="eyebrow">Self &amp; peer feedback</p><h1>Johari-Window Workshop</h1><p class="byline">Developed by: Shaigan Training &amp; SFE Department</p></div>' +
       '<div class="top-actions">' + badge + rightLink + '</div>' +
       '</div></header>';
   }
