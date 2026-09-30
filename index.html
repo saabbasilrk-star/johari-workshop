@@ -308,7 +308,19 @@
       return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
     });
   }
-  function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+  var SPECIAL_CASE = { mis: "MIS", kpi: "KPI", crm: "CRM", fpms: "FPMS", powerpoint: "PowerPoint" };
+  function capSegment(seg) {
+    var lower = seg.toLowerCase();
+    if (SPECIAL_CASE[lower]) return SPECIAL_CASE[lower];
+    return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
+  }
+  function cap(w) {
+    return w.split(" ").map(function (word) {
+      return word.split("-").map(function (part) {
+        return part.split("/").map(capSegment).join("/");
+      }).join("-");
+    }).join(" ");
+  }
 
   function getMyId() { try { return localStorage.getItem(MYID_KEY); } catch (e) { return null; } }
   function setMyId(id) { try { localStorage.setItem(MYID_KEY, id); } catch (e) {} }
